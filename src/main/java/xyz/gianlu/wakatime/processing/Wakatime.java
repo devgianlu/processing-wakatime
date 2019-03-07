@@ -25,7 +25,7 @@ public class Wakatime {
     private static final String VERSION = Wakatime.class.getPackage().getImplementationVersion();
     private static final long FREQUENCY = 2 * 60; // Max secs between heartbeats for continuous coding
     private static final int QUEUE_TIMEOUT_SECONDS = 30;
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
     private final String IDE_NAME = "Processing";
     private String lastFile = null;
     private long lastTime = 0;
@@ -137,7 +137,7 @@ public class Wakatime {
             return;
 
         lastFile = path;
-        lastTime = System.currentTimeMillis();
+        lastTime = getCurrentTimestamp();
 
         String language;
         switch (mode.getDefaultExtension()) {
