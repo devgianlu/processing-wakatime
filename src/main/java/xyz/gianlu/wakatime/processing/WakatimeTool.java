@@ -1,11 +1,12 @@
 package xyz.gianlu.wakatime.processing;
 
+import org.jetbrains.annotations.NotNull;
 import processing.app.Base;
 import processing.app.Sketch;
-import processing.app.SketchCode;
 import processing.app.tools.Tool;
 import processing.app.ui.Editor;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -39,13 +40,23 @@ public class WakatimeTool implements Tool {
         return "Wakatime Tool";
     }
 
-    private void attachListener(Editor editor) {
+    private void attachListener(@NotNull Editor editor) {
+        editor.getTextArea().addCaretListener(e -> appendHeartbeat(editor.getSketch(), false));
+
+        JMenuBar bar = editor.getJMenuBar();
+        JMenu file = bar.getMenu(0);
+        if (file != null) {
+            JMenuItem save = file.getItem(5);
+            save.addActionListener(e -> appendHeartbeat(editor.getSketch(), true));
+            JMenuItem saveAs = file.getItem(6);
+            saveAs.addActionListener(e -> appendHeartbeat(editor.getSketch(), true));
+        }
+
         LOGGER.config("Attached to " + editor);
-        editor.getTextArea().addCaretListener(e -> {
-            Sketch sketch = editor.getSketch();
-            SketchCode code = sketch.getCurrentCode();
-            wakatime.appendHeartbeat(sketch.getName(), code.getFile().getAbsolutePath(), sketch.getMode(), true);
-        });
+    }
+
+    private void appendHeartbeat(@NotNull Sketch sketch, boolean isWrite) {
+        wakatime.appendHeartbeat(sketch.getName(), sketch.getCurrentCode().getFile().getAbsolutePath(), sketch.getMode(), isWrite);
     }
 
     private class EditorDiscoverer implements Runnable {
