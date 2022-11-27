@@ -114,7 +114,7 @@ public class Wakatime {
         if (key == null || key.isEmpty()) return false;
 
         try {
-            UUID.fromString(key);
+            UUID.fromString(key.replaceFirst("^waka_", ""));
             return true;
         } catch (Exception ex) {
             return false;
